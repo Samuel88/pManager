@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<project name="TestDeploy" default="run_build">
+
+    <property name="guiJar" value="pManager.jar"></property>
+    <property name="mainClass" value="com.alessandroamico.pManager.Main"/>
+
+
+    <target name="run_build" depends="clean,compile,delete_old_jar,create_dirs,create_manifest,copy_all_files,create_jar,delete_temp_dirs">
+    	<echo>Creazione JAR completata</echo>
+    </target>
+
+	<!-- Rimuovo il vecchio file JAR -->
+    <target name="delete_old_jar">
+        <delete file="${guiJar}">
+        </delete>
+    </target>
+
+	<!-- Creo la directory temporanea per il jar -->
+    <target name="create_dirs">
+        <mkdir dir="jar_temp" />
+        <mkdir dir="jar_temp/META-INF" />
+    </target>
+
+	<!-- rimuovo le directory temporanee -->
+    <target name="delete_temp_dirs">
+        <delete dir="jar_temp">
+        </delete>
+    </target>
+
+	<!--Creo il MANIFEST per il jar da creare -->
+    <target name="create_manifest">
+        <manifest file="jar_temp/META-INF/MANIFEST.MF">
+            <attribute name="Manifest-Version" value="1.0" />
+            <attribute name="Version" value="1.0.0" />
+            <attribute name="Java-Version" value="${java.version}" />
+            <attribute name="Class-Path" value="${guiJar}" />
+            <attribute name="Main-Class" value="${mainClass}" />
+        </manifest>
+    </target>
+
+    <target name="create_jar">
+        <jar destfile="${guiJar}" manifest="jar_temp/META-INF/MANIFEST.MF" basedir="jar_temp">
+        </jar>
+    </target>
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac includeantruntime="false" srcdir="src" destdir="build/classes"/>
+    </target>
+
+
+    <target name="copy_all_files">
+        <copy todir="jar_temp">
+            <fileset dir="build/classes">
+                <include name="*/**" />
+            </fileset>
+        </copy>
+		<copy todir="jar_temp">
+			<fileset dir="icons">
+                <include name="*/**" />
+			</fileset>
+		</copy>
+    </target>
+
+</project>
